@@ -8,7 +8,7 @@ services:
     restart: unless-stopped
     environment:
       NODE_ENV: ${NODE_ENV:-production}
-      DATABASE_URL: ${DATABASE_URL:-mysql://${DB_USER:-tabungan}:${DB_PASSWORD:-tabungan123}@${DB_HOST:-localhost}:${DB_PORT:-3306}/${DB_NAME:-tabungan}}
+      DATABASE_URL: ${DATABASE_URL:-mysql://${DB_USER:-root}:${DB_PASSWORD:-root}@${DB_HOST:-host.docker.internal}:${DB_PORT:-3306}/${DB_NAME:-tabungan-vite}}
       JWT_SECRET: ${JWT_SECRET:-your-secret-key-change-in-production}
       PORT: 5000
     ports:
@@ -18,6 +18,8 @@ services:
       - ./backend/prisma:/app/prisma
     networks:
       - tabungan_network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:5000/health"]
       timeout: 20s
