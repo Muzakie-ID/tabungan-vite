@@ -35,7 +35,9 @@ services:
     depends_on:
       - backend
     environment:
-      VITE_API_URL: ${VITE_API_URL:-http://localhost:5000}
+      VITE_API_URL: ${VITE_API_URL:-http://tabungan_backend:5000}
+    ports:
+      - "${FRONTEND_PORT:-8090}:3000"
     networks:
       - tabungan_network
     healthcheck:
