@@ -1,0 +1,113 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String     @id @default(cuid())
+  email     String     @unique
+  name      String
+  password  String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  // Relations
+  goals                Goal[]
+  sharedGoalMembers    SharedGoalMember[]
+  invitationsCreated   GoalInvitation[] @relation("invitedByUser")
+  invitationsAccepted  GoalInvitation[] @relation("acceptedByUser")
+  transactions         Transaction[]
+  notifications        Notification[]
+}
+
+model Goal {
+  id            String   @id @default(cuid())
+  title         String
+  description   String?
+  targetAmount  BigInt
+  currentAmount BigInt   @default(0)
+  targetDate    DateTime
+  type          String   @default("INDIVIDUAL")
+  createdBy     String
+  creator       User     @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  sharedGoal   SharedGoal?
+  transactions Transaction[]
+}
+
+model SharedGoal {
+  id        String   @id @default(cuid())
+  goalId    String   @unique
+  goal      Goal     @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  members     SharedGoalMember[]
+  invitations GoalInvitation[]
+}
+
+model SharedGoalMember {
+  id           String   @id @default(cuid())
+  userId       String
+  sharedGoalId String
+  joinedAt     DateTime @default(now())
+  role         String   @default("member")
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sharedGoal SharedGoal @relation(fields: [sharedGoalId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, sharedGoalId])
+}
+
+model GoalInvitation {
+  id              String   @id @default(cuid())
+  sharedGoalId    String
+  invitedEmail    String
+  invitedByUserId String
+  acceptedByUserId String?
+  status          String   @default("PENDING")
+  createdAt       DateTime @default(now())
+  expiresAt       DateTime
+  acceptedAt      DateTime?
+
+  sharedGoal SharedGoal @relation(fields: [sharedGoalId], references: [id], onDelete: Cascade)
+  invitedBy  User       @relation("invitedByUser", fields: [invitedByUserId], references: [id], onDelete: Cascade)
+  acceptedBy User?      @relation("acceptedByUser", fields: [acceptedByUserId], references: [id], onDelete: SetNull)
+
+  @@unique([sharedGoalId, invitedEmail])
+}
+
+model Transaction {
+  id        String   @id @default(cuid())
+  goalId    String
+  userId    String
+  amount    BigInt
+  type      String
+  note      String?
+  createdAt DateTime @default(now())
+
+  user    User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goalRef Goal @relation(fields: [goalId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
