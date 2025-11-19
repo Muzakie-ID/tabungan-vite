@@ -3,6 +3,9 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+# Install OpenSSL untuk Prisma
+RUN apk add --no-cache openssl
+
 # Copy package files
 COPY package*.json ./
 COPY tsconfig.json ./
@@ -22,8 +25,8 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Install dumb-init for proper signal handling
-RUN apk add --no-cache dumb-init
+# Install required dependencies
+RUN apk add --no-cache dumb-init openssl
 
 # Copy package files from builder
 COPY package*.json ./
@@ -34,6 +37,9 @@ RUN npm ci --omit=dev
 # Copy built application from builder
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
+
+# Fix permissions untuk node_modules (penting untuk Prisma)
+RUN chmod -R 755 node_modules
 
 # Create non-root user for security
 RUN addgroup -g 1001 -S nodejs
