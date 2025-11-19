@@ -44,10 +44,10 @@ NODE_ENV=production
 DB_HOST=localhost            # or your external MySQL host
 DB_PORT=3306
 DB_USER=root
-DB_PASSWORD=root
+DB_PASSWORD=
 DB_NAME=tabungan-vite
 JWT_SECRET=your-secret
-VITE_API_URL=https://api-tabungan.muzakie.my.id
+VITE_API_URL=https://api.com
 BACKEND_PORT=5000
 FRONTEND_PORT=8090
 ```
