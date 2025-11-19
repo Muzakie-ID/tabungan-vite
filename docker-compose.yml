@@ -30,12 +30,12 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://api-tabungan.muzakie.my.id}
     container_name: tabungan_frontend
     restart: unless-stopped
     depends_on:
       - backend
-    environment:
-      VITE_API_URL: ${VITE_API_URL:-http://api-tabungan.muzakie.my.id}
     ports:
       - "${FRONTEND_PORT:-8090}:3000"
     networks:

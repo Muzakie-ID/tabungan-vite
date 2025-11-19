@@ -3,6 +3,9 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+# Accept build arguments
+ARG VITE_API_URL=http://api-tabungan.muzakie.my.id
+
 # Copy package files
 COPY package*.json ./
 COPY tsconfig.json ./
@@ -18,8 +21,8 @@ RUN npm ci
 # Copy source code
 COPY src ./src
 
-# Build application
-RUN npm run build
+# Build application with VITE_API_URL
+RUN VITE_API_URL=${VITE_API_URL} npm run build
 
 # Output stage - hanya copy dist ke volume/output
 FROM node:20-alpine
