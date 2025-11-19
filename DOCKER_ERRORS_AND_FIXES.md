@@ -17,8 +17,6 @@
 RUN apk add --no-cache openssl
 
 # ...later...
-
-# Fix permissions untuk node_modules
 RUN chmod -R 755 node_modules
 ```
 
@@ -35,11 +33,11 @@ Removed `version: '3.8'` dari docker-compose.yml
 version: '3.8'
 
 services:
-  backend:
-    ...
-```
+This document has been retired.
 
-### After
+Obsolete: debugging notes and intermediate fixes were consolidated into the main README and removed to keep the repository tidy.
+
+If you need the original troubleshooting notes, they can be recovered from the project history (git).
 ```yaml
 services:
   backend:
