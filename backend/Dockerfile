@@ -3,19 +3,22 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Install OpenSSL untuk Prisma
-RUN apk add --no-cache openssl
+# Install required system dependencies untuk Prisma
+RUN apk add --no-cache openssl make g++ python3
 
 # Copy package files
 COPY package*.json ./
 COPY tsconfig.json ./
 
-# Install dependencies
+# Install dependencies dengan rebuild Prisma
 RUN npm ci
 
 # Copy source code
 COPY src ./src
 COPY prisma ./prisma
+
+# Generate Prisma client
+RUN npx prisma generate
 
 # Build TypeScript
 RUN npm run build
@@ -25,23 +28,24 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Install required dependencies
+# Install required runtime dependencies
 RUN apk add --no-cache dumb-init openssl
 
-# Copy package files from builder
+# Copy package files
 COPY package*.json ./
 
-# Install production dependencies only
-RUN npm ci --omit=dev
+# Install production dependencies only (tanpa dev deps)
+RUN npm ci --omit=dev --legacy-peer-deps
 
-# Copy built application from builder
+# Copy built application dari builder
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 
-# Fix permissions untuk node_modules (penting untuk Prisma)
-RUN chmod -R 755 node_modules
+# Generate Prisma client di production
+RUN npx prisma generate
 
-# Create non-root user for security
+# Create non-root user untuk security
 RUN addgroup -g 1001 -S nodejs
 RUN adduser -S nodejs -u 1001
 
@@ -56,6 +60,9 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
 
 # Use dumb-init to handle signals properly
 ENTRYPOINT ["dumb-init", "--"]
+
+# Start application
+CMD ["node", "dist/server.js"]
 
 # Start application
 CMD ["node", "dist/server.js"]
