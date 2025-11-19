@@ -31,7 +31,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        VITE_API_URL: ${VITE_API_URL:-http://api-tabungan.muzakie.my.id}
+        VITE_API_URL: ${VITE_API_URL:-https://api-tabungan.muzakie.my.id}
     container_name: tabungan_frontend
     restart: unless-stopped
     depends_on:

@@ -8,8 +8,8 @@
 const getAPIBaseURL = (): string => {
   // Priority:
   // 1. Vite environment variable (set during build)
-  // 2. Fallback to external API domain
-  const apiUrl = import.meta.env.VITE_API_URL || 'http://api-tabungan.muzakie.my.id';
+  // 2. Fallback to external API domain (HTTPS for production)
+  const apiUrl = import.meta.env.VITE_API_URL || 'https://api-tabungan.muzakie.my.id';
   
   console.log('[API Config] Using base URL:', apiUrl);
   
