@@ -13,6 +13,7 @@ interface Goal {
   currentAmount: bigint;
   targetDate: string;
   createdBy: string;
+  transactions?: any[];
 }
 
 interface SharedGoal {
