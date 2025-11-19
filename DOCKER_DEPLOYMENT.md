@@ -6,11 +6,13 @@
 - Docker Compose terpasang
 - Port 3000, 5000 tersedia
 - MySQL Server (bisa external atau local)
+- Nginx reverse proxy (di host/VPS sendiri)
 
 ## Catatan
 
-- **MySQL standalone** atau menggunakan MySQL external? Lihat: `EXTERNAL_MYSQL_SETUP.md`
-- Dokumentasi ini untuk setup lengkap dengan MySQL internal
+- **Nginx**: Tidak di-containerize. Gunakan Nginx Anda sendiri di host/VPS. Lihat: `FRONTEND_ONLY_DOCKER.md`
+- **MySQL external**: Lihat: `EXTERNAL_MYSQL_SETUP.md`
+- **Dokumentasi ini**: Setup lengkap dengan Docker (Backend + Frontend) dan Nginx reverse proxy external
 
 ## Quick Start (Development)
 

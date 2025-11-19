@@ -6,6 +6,7 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 COPY tsconfig.json ./
+COPY tsconfig.node.json ./
 COPY vite.config.ts ./
 COPY index.html ./
 
@@ -18,25 +19,19 @@ COPY src ./src
 # Build application
 RUN npm run build
 
-# Production stage using nginx
-FROM nginx:alpine
+# Output stage - hanya copy dist ke volume/output
+FROM node:20-alpine
 
-# Copy custom nginx config
-COPY nginx.conf /etc/nginx/nginx.conf
+WORKDIR /app
 
-# Copy built application from builder
-COPY --from=builder /app/dist /usr/share/nginx/html
+# Copy built dist dari builder
+COPY --from=builder /app/dist ./dist
 
-# Create non-root user for security
-RUN addgroup -g 101 -S nginx || true
-RUN adduser -S nginx -u 101 || true
+# Expose port 3000
+EXPOSE 3000
 
-# Expose port
-EXPOSE 80
+# Serve with Node.js (untuk development)
+# atau gunakan nginx di reverse proxy Anda sendiri
+RUN npm install -g serve
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
-  CMD wget --quiet --tries=1 --spider http://localhost/ || exit 1
-
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["serve", "-s", "dist", "-l", "3000"]

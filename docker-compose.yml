@@ -39,11 +39,11 @@ services:
     environment:
       VITE_API_URL: ${VITE_API_URL:-http://backend:5000}
     ports:
-      - "${FRONTEND_PORT:-3000}:8090"
+      - "${FRONTEND_PORT:-3000}:3000"
     networks:
       - tabungan_network
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/"]
       timeout: 20s
       retries: 5
       interval: 30s
